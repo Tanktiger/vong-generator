@@ -1,0 +1,4 @@
+User-Agent: *
+Disallow:
+
+Sitemap: http://vong-generator.de/sitemap.xml
