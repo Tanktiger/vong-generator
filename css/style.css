@@ -34,3 +34,12 @@
 .fs-13 {
     font-size: 1.3em;
 }
+.vcenter {
+    display: inline-block;
+    vertical-align: middle;
+    float: none;
+}
+
+.font-yellow {
+    color: #FCDD34;
+}

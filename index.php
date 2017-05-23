@@ -1,5 +1,5 @@
 <?php
-
+session_start();
 /**
  * @TODO:
  * Facebook Seite anlegen
@@ -13,7 +13,6 @@
  * Bilder generieren mit Text drauf
  */
 
-
 $limit = 25;
 $page = 0;
 
@@ -25,8 +24,8 @@ $start = $limit * $page;
 
 if (!$start && !is_int($start)) $start = 0;
 
-//$link = mysqli_connect("127.0.0.1", "root", "", "vong");
-$link = mysqli_connect("127.0.0.1", "vongdb", "&D2o5xd8", "vong");
+$link = mysqli_connect("127.0.0.1", "root", "", "vong");
+//$link = mysqli_connect("127.0.0.1", "vongdb", "&D2o5xd8", "vong");
 
 /* check connection */
 if (mysqli_connect_errno()) {
@@ -68,6 +67,8 @@ function getGermanDate($date) {
     $datetime = new \DateTime($date);
     return $datetime->format("d.m.Y H:i:s");
 }
+
+$previousLikes = (isset($_SESSION["likes"]))? $_SESSION["likes"]: array();
 ?>
 <!DOCTYPE html>
 <html lang="de">
@@ -76,19 +77,19 @@ function getGermanDate($date) {
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
-    <meta name="description" content="Eigene Nachrichten oder Whatsapp Messages in Vong Text umwandeln. ✓ Einfach ✓ schnell ✓ online so vong Einfachkeit her">
+    <meta name="description" content="Eigene Nachrichten oder Whatsapp Messages in Vong Text oder Bild umwandeln. ✓ Einfach ✓ schnell ✓ online so vong Einfachkeit her">
     <meta name="robots" content="index">
     <meta property="og:url" content="http://www.vong-generator.de/" />
-    <meta property="og:title" content="Vong Text Generator - Nachrichten in Vong Text erstellen" />
+    <meta property="og:title" content="Vong Text Generator - Nachrichten in Vong Text erstellen als Bild oder Text" />
     <meta property="og:locale" content="de_DE" />
-    <meta property="og:description" content="Eigene Nachrichten oder Whatsapp Messages in Vong Text umwandeln. ✓ Einfach ✓ schnell ✓ online so vong Einfachkeit her" />
-    <meta property="og:site_name" content="Vong Text Generator Online" />
+    <meta property="og:description" content="Eigene Nachrichten oder Whatsapp Messages in Vong Text oder Bild umwandeln. ✓ Einfach ✓ schnell ✓ online so vong Einfachkeit her" />
+    <meta property="og:site_name" content="Vong Text und Bild Generator Online" />
     <meta property="article:publisher" content="https://www.facebook.com/vong-generator" />
 <!--    <meta property="og:image" content="https://nextlevelseo.de/wp-content/uploads/2014/10/title-tag.jpg" />-->
 <!--    <meta name="twitter:card" content="summary_large_image" />-->
 <!--    <meta name="twitter:image:src" content="https://nextlevelseo.de/wp-content/uploads/2014/10/title-tag.jpg" />-->
 <!--    <meta name="twitter:site" content="@vongGenerator" />-->
-    <title>Vong Text Generator</title>
+    <title>Vong Text und Bild Generator</title>
 
     <!-- Font Awesome -->
     <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.6.0/css/font-awesome.min.css">
@@ -144,26 +145,17 @@ function getGermanDate($date) {
 
         <div class="row">
             <div class="col-xs-12 col-sm-12 col-md-12">
-                <h1>Vong Text Generator Online</h1>
+                <h1>Vong Text und Bild Generator Online</h1>
                 <p class="fs-13">
-                    Deine Nachricht oder Whatsapp Message schnell und einfach in einen Vong Text umwandeln. Dazu dient diese Seite. Ihr verleiht euren Nachrichten dadurch
-                    eine neue Art von Witz und eure Freunde fallen so noch mehr vom Stuhl, lol.
+                    Deine Nachricht oder Whatsapp Message schnell und einfach in einen Vong Text umwandeln. Als Bild oder Text kann dann euer Vong Text verteilt werden.
+                    Dazu dient diese Seite. Ihr verleiht euren Nachrichten dadurch  eine neue Art von Witz und eure Freunde fallen so noch mehr vom Stuhl, lol.
                     <br>Gebt einfach hier euren Text ein und drückt dann auf "Text umwandeln" um euren Text in Vong Deutsch zu erhalten so vong Einfachkeit her.
                 </p>
             </div>
         </div>
         <div class="row">
             <div class="col-xs-12 col-sm-12 col-md-12" >
-                <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-                <!-- Responsive All Channels -->
-                <ins class="adsbygoogle"
-                     style="display:block"
-                     data-ad-client="ca-pub-6877983798700739"
-                     data-ad-slot="2417250801"
-                     data-ad-format="auto"></ins>
-                <script>
-                    (adsbygoogle = window.adsbygoogle || []).push({});
-                </script>
+
             </div>
         </div>
         <div class="row">
@@ -187,7 +179,10 @@ function getGermanDate($date) {
                     </div>
                     <button id="copyVongText" type="button" class="btn btn-block btn-lg btn-info">Vong Text kopieren <i class="fa fa-files-o"></i></button>
                 </div>
-
+                <div class="col-xs-12 col-sm-12 col-md-12 text-center" style="display: none;margin-top: 20px;">
+                    <img src="" id="previewImage" style="width: 50%">
+                    <button id="copyVongPicture" type="button" class="btn btn-block btn-lg btn-success">Bild Url kopieren <i class="fa fa-image"></i></button>
+                </div>
             </div>
             <div class="row">
                 <div class="col-xs-12 col-sm-12 col-md-12 center-block">
@@ -206,30 +201,18 @@ function getGermanDate($date) {
 
         <?php } //endif ?>
 
-        <?php if ($page > 0) { ?>
-
-        <div class="row">
-            <div class="col-xs-12 col-sm-12 col-md-12" style="height: 90px;">
-                <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-                <!-- Responsive All Channels -->
-                <ins class="adsbygoogle"
-                     style="display:block"
-                     data-ad-client="ca-pub-6877983798700739"
-                     data-ad-slot="2417250801"
-                     data-ad-format="auto"></ins>
-                <script>
-                    (adsbygoogle = window.adsbygoogle || []).push({});
-                </script>
-            </div>
-        </div>
-        <?php } //endif ?>
-
         <div class="row">
             <div class="col-xs-12 col-sm-12 col-md-12" >
                 <?php if ($page === 0) { ?>
                     <h2>Bisher erstellte Vong Texte</h2>
                 <?php } else { ?>
                     <h1>Bisher erstellte Vong Texte mit dem Online Generator</h1>
+                    <p class="fs-13">
+                        Deine Nachricht oder Whatsapp Message schnell und einfach in einen Vong Text umwandeln. Als Bild oder Text kann dann euer Vong Text verteilt werden.
+                        Dazu dient diese Seite. Ihr verleiht euren Nachrichten dadurch eine neue Art von Witz und eure Freunde fallen so noch mehr vom Stuhl, lol.
+                        <br>Gebt einfach hier euren Text ein und drückt dann auf "Text umwandeln" um euren Text in Vong Deutsch zu erhalten so vong Einfachkeit her.
+                        <a href="/" class="btn btn-warning">Jetzt Text selbst generieren</a>
+                    </p>
                     <div class="shariff " data-lang="de" data-services="[&quot;facebook&quot;,&quot;twitter&quot;,&quot;whatsapp&quot;,&quot;googleplus&quot;,&quot;reddit&quot;]"></div>
                 <?php } ?>
 
@@ -240,9 +223,32 @@ function getGermanDate($date) {
                 <div class="list-group">
                     <?php foreach ($texts as $text) { ?>
                     <div class="list-group-item list-group-item-action flex-column align-items-start ">
-                        <p class="lead"><?php echo nl2br($text['vong']); ?></p>
-                        <small><?php echo getGermanDate($text['tstamp_created']); ?></small>
-                        <button class="btn btn-sm btn-info copy-vong-text-button" >Text kopieren</button>
+                        <div class="row">
+                            <div class="col-xs-1 col-md-1 col-sm-1 ">
+                                <div class="vcenter text-center ">
+                                    <?php if (!in_array($text['id'], $previousLikes)) {?>
+                                    <i class="fa fa-3x fa-thumbs-o-up"
+                                       id="likeIcon<?php echo $text['id']; ?>"
+                                       onclick="likeText(<?php echo $text['id']; ?>)"
+                                    ></i>
+                                    <?php } else { ?>
+                                        <i class="fa fa-3x fa-thumbs-o-up font-yellow"
+                                           id="likeIcon<?php echo $text['id']; ?>"
+                                        ></i>
+                                    <?php } ?>
+                                    <br>
+                                    <span class="like-count fs-15" id="likeCount<?php echo $text['id']; ?>"><?php echo (isset($text['likes']))? $text['likes']: 0; ?></span>
+                                </div>
+                            </div>
+                            <div class="col-xs-11 col-sm-11 col-md-11">
+                                <p class="lead"><?php echo substr(nl2br($text['vong']), 0, 500); ?></p>
+                                <small><?php echo getGermanDate($text['tstamp_created']); ?></small>
+                                <button class="btn btn-sm btn-info copy-vong-text-button" data-clipboard-text="<?php echo $text['vong']; ?>">Text kopieren</button>
+                                <?php if (isset($text['image']) && $text['image'] !== '') { ?>
+                                    <button class="btn btn-sm btn-success copy-vong-picture-button" data-clipboard-text="<?php echo $text['image']; ?>">Bild kopieren</button>
+                                <?php } ?>
+                            </div>
+                        </div>
                     </div>
                     <?php } ?>
                 </div>
@@ -275,31 +281,7 @@ function getGermanDate($date) {
             </div>
 
             <div class="col-hidden-xs col-sm-4 col-md-4" style="height: 600px;">
-                <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-                <!-- Skyscraper minimal -->
-                <ins class="adsbygoogle"
-                     style="display:inline-block;width:300px;height:600px"
-                     data-ad-client="ca-pub-6877983798700739"
-                     data-ad-slot="4275760406"></ins>
-                <script>
-                    (adsbygoogle = window.adsbygoogle || []).push({});
-                </script>
-            </div>
-        </div>
 
-        <div class="row">
-            <div class="col-xs-12 col-sm-12 col-md-12" style="height: 90px;">
-                <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-                <!-- Responsive All Channels -->
-                <ins class="adsbygoogle"
-                     style="display:block"
-                     data-ad-client="ca-pub-6877983798700739"
-                     data-ad-slot="2417250801"
-                     data-ad-format="auto"></ins>
-                <script>
-                    (adsbygoogle = window.adsbygoogle || []).push({});
-                </script>
-                <p>&nbsp;</p>
             </div>
         </div>
 
@@ -333,95 +315,9 @@ function getGermanDate($date) {
 
     <script type="text/javascript" src="js/shariff.min.js"></script>
 
-    <script>
-        $(document).on("ready", function () {
-            var copyTextareaBtn = $('#copyVongText');
+    <script type="text/javascript" src="js/clipboard.min.js"></script>
 
-            copyTextareaBtn.on('click', function(event) {
-                var copyTextarea = $('#vongText');
-                copyTextarea.select();
-
-                try {
-                    var successful = document.execCommand('copy');
-                    if (successful) {
-                        copyTextareaBtn.html('Kopiert <i class="fa fa-check"></i>');
-                        copyTextareaBtn.prop('disabled', true);
-
-                        setTimeout(function () {
-                            copyTextareaBtn.html('Text kopieren <i class="fa fa-files-o"></i>');
-                            copyTextareaBtn.prop('disabled', false);
-                        }, 3000)
-                    }
-
-                } catch (err) {
-                    console.log('Oops, unable to copy');
-                }
-            });
-
-            $('.copy-vong-text-button').on("click", function () {
-                var button = $(this);
-                try {
-                    button.parent().find("p.lead").selectText();
-                    var successful = document.execCommand('copy');
-                    if (successful) {
-                        button.html('Kopiert <i class="fa fa-check"></i>');
-                        button.prop('disabled', true);
-
-                        setTimeout(function () {
-                            button.html('Text kopieren <i class="fa fa-files-o"></i>');
-                            button.prop('disabled', false);
-                        }, 3000);
-                    }
-
-                } catch (err) {
-                    console.log('Oops, unable to copy');
-                }
-            });
-
-            $('#generateTextButton').on("click", function () {
-                var button = $(this);
-                console.log($('#normalText').val());
-                generateText($('#normalText').val());
-
-                button.prop('disabled', true);
-                setTimeout(function () {
-                    button.prop('disabled', false);
-                }, 2000);
-            });
-        });
-
-
-        function generateText(text) {
-            $.post("vong.php", {text: text.replace(/(\r\n|\n|\r)/gm,"#nl#")})
-                .done(function (response) {
-                    console.log(response);
-                    //@TODO: error handling
-                    if (response && response.vong) {
-                        $('#vongText').val(response.vong);
-                    }
-
-                });
-        }
-
-        jQuery.fn.selectText = function(){
-            var doc = document
-                , element = this[0]
-                , range, selection
-                ;
-            if (doc.body.createTextRange) {
-                range = document.body.createTextRange();
-                range.moveToElementText(element);
-                range.select();
-            } else if (window.getSelection) {
-                selection = window.getSelection();
-                range = document.createRange();
-                range.selectNodeContents(element);
-                selection.removeAllRanges();
-                selection.addRange(range);
-            }
-        };
-
-    </script>
+    <script type="text/javascript" src="js/scripts.js"></script>
 </body>
 
 </html>

@@ -1,28 +1,40 @@
 <?php
+include_once "gd-text/src/Box.php";
+include_once "gd-text/src/TextWrapping.php";
+include_once "gd-text/src/Color.php";
+include_once "gd-text/src/HorizontalAlignment.php";
+include_once "gd-text/src/VerticalAlignment.php";
+use GDText\Box;
+use GDText\Color;
 
-//$text = "Wie heißt eigentlich der Gott der Vegetarier? Hallo, ich bins ein Kräuterbuddha, lol.";
-//$text2 = "Ich bin ab jetzt ein Smartphone, ich verlasse das Haus erst wenn ich 100% voll bin. Hallo ich bins ein Smartphone.";
-//$text3 = "Nein du Spast. Du bist ein Roboter und kein Mensch. lol";
+session_start();
+
+$allowed_hosts = array('vong-generator.de', 'localhost:9050');
+if (!isset($_SERVER['HTTP_HOST']) || !in_array($_SERVER['HTTP_HOST'], $allowed_hosts)) {
+    header($_SERVER['SERVER_PROTOCOL'].' 400 Bad Request');
+    exit;
+}
+
+//    $link = mysqli_connect("127.0.0.1", "vongdb", "&D2o5xd8", "vong");
+$link = mysqli_connect("127.0.0.1", "root", "", "vong");
+/* check connection */
+if (mysqli_connect_errno()) {
+    echo json_encode(array("vong" => "Sorry, da ist mir ein Fehler unterlaufen! Bitte probiere es erneut!"));
+    exit();
+}
 
 if (isset($_POST["text"]) && $_POST["text"] !== '') {
-    $text =  htmlspecialchars(strip_tags($_POST['text']));
-    $link = mysqli_connect("127.0.0.1", "vongdb", "&D2o5xd8", "vong");
-//    $link = mysqli_connect("127.0.0.1", "root", "", "vong");
-
-    /* check connection */
-    if (mysqli_connect_errno()) {
-        echo json_encode(array("vong" => "Sorry, da ist mir ein Fehler unterlaufen! Bitte probiere es erneut!"));
-        exit();
-    }
+    $text =  strip_tags($_POST['text']);
 
     $vong = vongarize($text);
 
     $now = date("Y-m-d H:i:s");
-    $result = mysqli_query($link, "INSERT INTO user_text VALUES (null, 
+    $result = mysqli_query($link, "INSERT INTO user_text VALUES (null, null, 
     '".$now."',
     '".$_SERVER['REMOTE_ADDR']."',
     '".mysqli_real_escape_string($link, $text)."',
-    '".mysqli_real_escape_string($link, $vong)."'
+    '".mysqli_real_escape_string($link, $vong)."',
+    0
     )");
 
     if ( $result === false ) {
@@ -35,13 +47,75 @@ if (isset($_POST["text"]) && $_POST["text"] !== '') {
         mysqli_free_result($result);
     }
 
+    $im = imagecreatefromjpeg("img/vong.jpg");
+
+    $fs = 80;
+
+    if (strlen($vong) > 150 && strlen($vong) < 250) {
+        $fs = 60;
+    } else if (strlen($vong) >= 250 && strlen($vong) < 350) {
+        $fs = 40;
+    } else if (strlen($vong) >= 350 && strlen($vong) < 500) {
+        $fs = 20;
+    }else if (strlen($vong) >= 500) {
+        $fs = 10;
+    }
+
+    $box = new Box($im);
+    $box->setFontFace(__DIR__.'/font/Vinegar-Regular.otf'); // http://www.dafont.com/pacifico.font
+    $box->setFontSize($fs);
+    $box->setFontColor(new Color(0, 0, 0));
+    $box->setTextShadow(new Color(0, 0, 0, 50), 0, 0);
+    $box->setLineHeight(1.2);
+    $box->setBox(20, 0, 900, 900);
+    $box->setTextAlign('center', 'center');
+    $box->draw(html_entity_decode($vong));
+
+
+//        header("Content-type: image/png");
+    $filename = time() . '.png';
+    $imageUrl= "http://".$_SERVER['HTTP_HOST']."/img/created/".$filename;
+    imagepng($im, "img/created/" . $filename);
+
+    $lastinsertId = mysqli_insert_id($link);
+
+    //save image
+    $result = mysqli_query($link, "UPDATE user_text SET image='".$imageUrl."' WHERE id=" . $lastinsertId);
+
     mysqli_close($link);
 
     header("Content-type: application/json; charset=utf-8");
 
-    echo json_encode(array("vong" => $vong));
+    echo json_encode(array("vong" => $vong, "url" => $imageUrl));
+    exit();
+
+} else if (isset($_POST["like"]) && isset($_POST["id"]) && $_POST["like"] && $_POST["id"] !== '') {
+    $result = mysqli_query($link, "UPDATE user_text SET likes= likes + 1 WHERE id=" . mysqli_real_escape_string($link, $_POST["id"]));
+
+    if ( $result === false ) {
+        mysqli_close($link);
+        echo json_encode(array("vong" => "Sorry, da ist mir ein Fehler unterlaufen! Bitte probiere es erneut!"));
+        exit();
+    }
+
+    if ($result instanceof mysqli) {
+        mysqli_free_result($result);
+    }
+
+    mysqli_close($link);
+    if (!isset($_SESSION["likes"])) $_SESSION["likes"] = array();
+
+    array_push($_SESSION["likes"], $_POST["id"]);
+
+    header("Content-type: application/json; charset=utf-8");
+
+    echo json_encode(array("success" => true));
     exit();
 }
+
+mysqli_close($link);
+
+header("Content-type: application/json; charset=utf-8");
 echo json_encode(array("vong" =>  "Sorry, da ist mir ein Fehler unterlaufen! Bitte probiere es erneut!"));
 exit();
 
@@ -73,12 +147,22 @@ function vongarize($text) {
 
 function vongarizeWord($word) {
 
+    if ($word == '') return $word;
+
     $editComplete = false;
     $newWord = '';
+    $specialChars = array("!", '"', "'", "?", ".", ",", ":", ";", "-", "´", "`", ")", "(");
 
     $lastChar = substr($word, -1);
+    $firstChar = $word[0];
 
-    if ($lastChar === '!' || $lastChar === '?' || $lastChar === '.' || $lastChar === ',' || $lastChar === ';' || $lastChar === '-' || $lastChar === ':') {
+    if (in_array($firstChar, $specialChars)) {
+        $word = str_replace($firstChar, "", $word);
+    } else {
+        $firstChar = '';
+    }
+
+    if (in_array($lastChar, $specialChars)) {
         $word = str_replace($lastChar, "", $word);
     } else {
         $lastChar = '';
@@ -231,7 +315,7 @@ function vongarizeWord($word) {
 
     if ($startsWithUpper) $newWord = ucfirst($newWord);
 
-    return $newWord . $lastChar;
+    return $firstChar . $newWord . $lastChar;
 }
 
 function starts_with_upper($str) {
