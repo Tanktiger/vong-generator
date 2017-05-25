@@ -1,18 +1,8 @@
 <?php
 session_start();
 /**
- * @TODO:
- * Facebook Seite anlegen
- * Share Buttons einbauen für Seite
- * Share Buttons einbauen für vong Text
- * SEO Check machen
- * Mehr Text auf die Seite bringen (eventuell Erklärungstext etc. Da sonst zu wenig Content)
- * Seite aufhübschen (mehr Farbe, Hintergrund, Bild?)
- * Next Steps:
- * Rating von bisher erstellten
- * Bilder generieren mit Text drauf
+ * @copyright  Tom Scheduikat, 2017
  */
-
 $limit = 25;
 $page = 0;
 
@@ -59,6 +49,7 @@ if ( $result === false ) {
 while ( $row = mysqli_fetch_assoc($result) ) {
     $texts[$row['id']] = $row;
 }
+$posts = mysqli_query($link, "SELECT * FROM posts ORDER BY id DESC LIMIT 10");
 
 mysqli_free_result($result);
 mysqli_close($link);
@@ -69,6 +60,7 @@ function getGermanDate($date) {
 }
 
 $previousLikes = (isset($_SESSION["likes"]))? $_SESSION["likes"]: array();
+
 ?>
 <!DOCTYPE html>
 <html lang="de">
@@ -108,12 +100,6 @@ $previousLikes = (isset($_SESSION["likes"]))? $_SESSION["likes"]: array();
     <!-- End Google Tag Manager -->
 
     <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-    <script>
-        (adsbygoogle = window.adsbygoogle || []).push({
-            google_ad_client: "ca-pub-6877983798700739",
-            enable_page_level_ads: true
-        });
-    </script>
 </head>
 
 <body>
@@ -121,25 +107,28 @@ $previousLikes = (isset($_SESSION["likes"]))? $_SESSION["likes"]: array();
 <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-W8XX6HP"
                   height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <!-- End Google Tag Manager (noscript) -->
-
-    <nav class="navbar navbar-toggleable-md navbar-light bg-faded main-nav ">
-        <div class="container">
+<nav class="navbar navbar-default  main-nav navbar-light bg-faded">
+    <div class="container">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
             <a class="navbar-brand" href="/">Vong Generator</a>
-
-            <!--<div class="collapse navbar-collapse" id="navbarSupportedContent">-->
-            <!--<ul class="navbar-nav mr-auto">-->
-            <!--<li class="nav-item active">-->
-            <!--<a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>-->
-            <!--</li>-->
-            <!--<li class="nav-item">-->
-            <!--<a class="nav-link" href="#">Link</a>-->
-            <!--</li>-->
-            <!--</ul>-->
-            <!--</div>-->
         </div>
 
-    </nav>
-
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav">
+                <li class="active"><a href="/">Generator <span class="sr-only">(current)</span></a></li>
+                <li><a href="/posts">Beiträge</a></li>
+            </ul>
+        </div><!-- /.navbar-collapse -->
+    </div><!-- /.container-fluid -->
+</nav>
     <div class="container">
         <?php if ($page === 0) { ?>
 
@@ -151,11 +140,6 @@ $previousLikes = (isset($_SESSION["likes"]))? $_SESSION["likes"]: array();
                     Dazu dient diese Seite. Ihr verleiht euren Nachrichten dadurch  eine neue Art von Witz und eure Freunde fallen so noch mehr vom Stuhl, lol.
                     <br>Gebt einfach hier euren Text ein und drückt dann auf "Text umwandeln" um euren Text in Vong Deutsch zu erhalten so vong Einfachkeit her.
                 </p>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-xs-12 col-sm-12 col-md-12" >
-
             </div>
         </div>
         <div class="row">
@@ -187,9 +171,8 @@ $previousLikes = (isset($_SESSION["likes"]))? $_SESSION["likes"]: array();
             <div class="row">
                 <div class="col-xs-12 col-sm-12 col-md-12 center-block">
                     <p>&nbsp;</p>
-                    <p class="mb-1" style="font-size: 1.3em;">Danke das Ihr den Generator benutzt. Teilt Ihn mit euren Freunden wenn er euch gefällt!</p>
+                    <p class="mb-1" style="font-size: 1.3em;">Hinweis: Eure Texte werden gespeichert. Danke das Ihr den Generator benutzt. Teilt Ihn mit euren Freunden wenn er euch gefällt!</p>
                     <div class="shariff " data-lang="de" data-services="[&quot;facebook&quot;,&quot;twitter&quot;,&quot;whatsapp&quot;,&quot;googleplus&quot;,&quot;reddit&quot;]"></div>
-
                 </div>
             </div>
         </form>
@@ -198,13 +181,38 @@ $previousLikes = (isset($_SESSION["likes"]))? $_SESSION["likes"]: array();
                 <p>&nbsp;</p>
             </div>
         </div>
-
         <?php } //endif ?>
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-6" >
+                <h2>Aktuele Informazion vong Wichtigkeid her</h2>
+            </div>
+            <div class="col-xs-12 col-sm-12 col-md-12" >
+                <div class="list-group">
+                    <?php while ($post = mysqli_fetch_assoc($posts)) { ?>
+                    <a href="/posts/<?php echo $post["id"]; ?>" class="list-group-item list-group-item-action flex-column align-items-start ">
+                        <div class="row">
+                            <div class="col-xs-2 col-md-2 col-sm-2 ">
+                                <?php if (!isset($post["file"])) { ?>
+                                    <img src="img/news.jpg" class="img" style="width: 100%;" />
+                                <?php } else { ?>
+                                    <img src="<?php echo $post["file"]; ?>" class="img" style="width: 100%;" />
+                                <?php } ?>
+                                <small><?php echo date("d.m.Y H:i:s", $post['tstamp']); ?></small>
+                            </div>
+                            <div class="col-xs-10 col-md-10 col-sm-10">
+                                <p class="lead"><?php echo $post["title"]; ?></p>
+                            </div>
+                        </div>
+                    </a>
+                    <?php } ?>
+                </div>
+            </div>
+        </div>
 
         <div class="row">
-            <div class="col-xs-12 col-sm-12 col-md-12" >
+            <div class="col-xs-12 col-sm-12 col-md-6" >
                 <?php if ($page === 0) { ?>
-                    <h2>Bisher erstellte Vong Texte</h2>
+                    <h2>Bisher erstellte Vong Texte vong H1s</h2>
                 <?php } else { ?>
                     <h1>Bisher erstellte Vong Texte mit dem Online Generator</h1>
                     <p class="fs-13">
@@ -218,8 +226,9 @@ $previousLikes = (isset($_SESSION["likes"]))? $_SESSION["likes"]: array();
 
             </div>
         </div>
+
         <div class="row">
-            <div class="col-xs-12 col-sm-8 col-md-8" >
+            <div class="col-xs-12 col-sm-12 col-md-12" >
                 <div class="list-group">
                     <?php foreach ($texts as $text) { ?>
                     <div class="list-group-item list-group-item-action flex-column align-items-start ">
@@ -280,9 +289,6 @@ $previousLikes = (isset($_SESSION["likes"]))? $_SESSION["likes"]: array();
                 <?php } ?>
             </div>
 
-            <div class="col-hidden-xs col-sm-4 col-md-4" style="height: 600px;">
-
-            </div>
         </div>
 
         <div class="row">
@@ -301,7 +307,7 @@ $previousLikes = (isset($_SESSION["likes"]))? $_SESSION["likes"]: array();
 
     <footer class="footer">
         <div class="container">
-            <a href="/impressum.php" class="text-muted">Impressum</a>
+            <a href="/impressum" class="text-muted">Impressum</a>
         </div>
     </footer>
 

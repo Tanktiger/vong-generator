@@ -9,8 +9,11 @@
     display: block;
     margin-top: 6vh;
 }
-
-.main-nav {
+small.xs {
+    font-size: 70%;
+}
+.main-nav,
+.navbar-default.main-nav .navbar-nav>li>a {
     background-color: #025aa5;
     color: #FFF;
 }
@@ -18,7 +21,24 @@
 .main-nav a.navbar-brand {
     color: #FFF;
 }
-
+.navbar-default.main-nav .navbar-brand:focus,
+.navbar-default.main-nav .navbar-brand:hover,
+.navbar-default.main-nav .navbar-nav>.active>a,
+.navbar-default.main-nav .navbar-nav>.active>a:focus,
+.navbar-default.main-nav .navbar-nav>.active>a:hover {
+    background-color: #024A87;
+    color: #FFF;
+}
+.navbar-default.main-nav .navbar-nav>li>a:focus,
+.navbar-default.main-nav .navbar-nav>li>a:hover {
+    background-color: #024A87;
+    color: #FFF;
+}
+.nav.main-nav>li>a:focus,
+.nav.main-nav>li>a:hover {
+    background-color: #025aa5;
+    color: #FFF;
+}
 .center-row {
     display:table;
 }

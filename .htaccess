@@ -1,0 +1,6 @@
+RewriteEngine On
+
+RewriteRule ^/?posts/([0-9]+)$ /posts.php?id=$1
+RewriteRule ^/?posts$ /posts.php
+RewriteRule ^/?impressum$ /impressum.php
+RewriteRule ^/?login$ /login.php
