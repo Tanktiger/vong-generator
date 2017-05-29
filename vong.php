@@ -10,14 +10,16 @@ use GDText\Color;
 
 session_start();
 
-$allowed_hosts = array('vong-generator.de', 'localhost:9050');
+$allowed_hosts = array('vong-generator.de', 'localhost:9050', 'neu.vong-generator.de');
 if (!isset($_SERVER['HTTP_HOST']) || !in_array($_SERVER['HTTP_HOST'], $allowed_hosts)) {
     header($_SERVER['SERVER_PROTOCOL'].' 400 Bad Request');
     exit;
 }
 
 //    $link = mysqli_connect("127.0.0.1", "vongdb", "&D2o5xd8", "vong");
-$link = mysqli_connect("127.0.0.1", "root", "", "vong");
+//$link = mysqli_connect("127.0.0.1", "root", "", "vong");
+$link = mysqli_connect("127.0.0.1", "vong-neu", "Gka3#f30", "vong_neu");
+
 /* check connection */
 if (mysqli_connect_errno()) {
     echo json_encode(array("vong" => "Sorry, da ist mir ein Fehler unterlaufen! Bitte probiere es erneut!"));

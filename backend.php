@@ -5,8 +5,9 @@ include_once "vongClass.php";
  */
 session_start();
 
-$link = mysqli_connect("127.0.0.1", "root", "", "vong");
+//$link = mysqli_connect("127.0.0.1", "root", "", "vong");
 //$link = mysqli_connect("127.0.0.1", "vongdb", "&D2o5xd8", "vong");
+$link = mysqli_connect("127.0.0.1", "vong-neu", "Gka3#f30", "vong_neu");
 
 /* check connection */
 if (mysqli_connect_errno()) {
