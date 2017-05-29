@@ -16,9 +16,8 @@ if (!isset($_SERVER['HTTP_HOST']) || !in_array($_SERVER['HTTP_HOST'], $allowed_h
     exit;
 }
 
-//    $link = mysqli_connect("127.0.0.1", "vongdb", "&D2o5xd8", "vong");
+    $link = mysqli_connect("127.0.0.1", "vongdb", "&D2o5xd8", "vong");
 //$link = mysqli_connect("127.0.0.1", "root", "", "vong");
-$link = mysqli_connect("127.0.0.1", "vong-neu", "Gka3#f30", "vong_neu");
 
 /* check connection */
 if (mysqli_connect_errno()) {
@@ -55,11 +54,11 @@ if (isset($_POST["text"]) && $_POST["text"] !== '') {
 
     $fs = 80;
 
-    if (strlen($vong) > 150 && strlen($vong) < 250) {
+    if (strlen($vong) > 100 && strlen($vong) < 200) {
         $fs = 60;
-    } else if (strlen($vong) >= 250 && strlen($vong) < 350) {
+    } else if (strlen($vong) >= 200 && strlen($vong) < 300) {
         $fs = 40;
-    } else if (strlen($vong) >= 350 && strlen($vong) < 500) {
+    } else if (strlen($vong) >= 300 && strlen($vong) < 500) {
         $fs = 20;
     }else if (strlen($vong) >= 500) {
         $fs = 10;

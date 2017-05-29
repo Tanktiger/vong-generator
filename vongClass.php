@@ -29,7 +29,7 @@ Class Vong {
 
     function vongarizeWord($word) {
 
-        if ($word == '' || $word == 'ä' || $word == 'ü' || $word == 'ö' || $word == "ß") return $word;
+        if ($word == '' || $word == 'ä' || $word == 'ü' || $word == 'ö' || $word == "ß" || strlen($word) == 1) return $word;
 
         $editComplete = false;
         $newWord = '';
@@ -191,6 +191,15 @@ Class Vong {
                 break;
             case "zeh":
                 $newWord = "C";
+                break;
+            case "aber":
+                $newWord = "abba";
+                break;
+            case "nicht":
+                $newWord = "nit";
+                break;
+            case "mehr":
+                $newWord = "meer";
                 break;
             default:
                 break;
