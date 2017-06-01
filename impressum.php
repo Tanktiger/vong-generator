@@ -55,16 +55,24 @@
         <div class="col-md-12 col-xs-12 col-sm-12">
             <address>
                 <h3>Angaben gemäß § 5 TMG:</h3>
-                <strong>Tom Scheduikat</strong><br>
-                Ossenreyerstraße 60<br>
-                18439 Stralsund<br>
+                <strong>Tobias Platter</strong><br>
+                XXXXXXXXXXXXXX<br>
+                XXXXXXXXXXXXXXXX<br>
             </address>
 
             <address>
                 <h3>Kontakt</h3>
                 <strong>E-Mail</strong><br>
-                Tom.Scheduikat [at] gmail.com
+                XXXXXXX [at] XXXXXX.com
             </address>
+
+            <address>
+                <h4>Idee und erste Version des Generators von:</h4>
+                <strong>Tom Scheduikat</strong><br>
+                <a href="http://www.tomscheduikat.com" title="Tom Scheduikat - Webentwickler">www.tomscheduikat.com</a><br>
+                <a href="mailto:info@tomscheduikat.com" title="Tom Scheduikat - Email">info@tomscheduikat.com</a><br>
+            </address>
+
             <h1>Datenschutzerkl&auml;rung</h1> <h2>Datenschutz</h2> <p>Die Betreiber dieser Seiten nehmen den
                 Schutz Ihrer pers&ouml;nlichen Daten sehr ernst. Wir behandeln Ihre personenbezogenen Daten vertraulich und
                 entsprechend der gesetzlichen Datenschutzvorschriften sowie dieser Datenschutzerkl&auml;rung.</p> <p>Die

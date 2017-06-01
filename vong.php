@@ -16,8 +16,7 @@ if (!isset($_SERVER['HTTP_HOST']) || !in_array($_SERVER['HTTP_HOST'], $allowed_h
     exit;
 }
 
-    $link = mysqli_connect("127.0.0.1", "vongdb", "&D2o5xd8", "vong");
-//$link = mysqli_connect("127.0.0.1", "root", "", "vong");
+$link = mysqli_connect("127.0.0.1", "root", "", "vong");
 
 /* check connection */
 if (mysqli_connect_errno()) {
@@ -54,6 +53,7 @@ if (isset($_POST["text"]) && $_POST["text"] !== '') {
 
     $fs = 80;
 
+    //Damit die schrift auch ins Bild passt, hier die schriftgröße je nach Zeichen reduzieren
     if (strlen($vong) > 100 && strlen($vong) < 200) {
         $fs = 60;
     } else if (strlen($vong) >= 200 && strlen($vong) < 300) {
@@ -65,7 +65,7 @@ if (isset($_POST["text"]) && $_POST["text"] !== '') {
     }
 
     $box = new Box($im);
-    $box->setFontFace(__DIR__.'/font/Vinegar-Regular.otf'); // http://www.dafont.com/pacifico.font
+    $box->setFontFace(__DIR__.'/font/Vinegar-Regular.otf'); //@TODO: auf font von vong anpassen
     $box->setFontSize($fs);
     $box->setFontColor(new Color(0, 0, 0));
     $box->setTextShadow(new Color(0, 0, 0, 50), 0, 0);
@@ -76,9 +76,15 @@ if (isset($_POST["text"]) && $_POST["text"] !== '') {
 
 
 //        header("Content-type: image/png");
-    $filename = time() . '.png';
-    $imageUrl= "http://".$_SERVER['HTTP_HOST']."/img/created/".$filename;
-    imagepng($im, "img/created/" . $filename);
+    $folder = "img/created/" . date("Y") . "/" . date("m") . "/" . date("d") . "/";
+
+    if (!is_dir($folder)) {
+        mkdir($folder, 0755, true);
+    }
+
+    $filename = md5(time() . mt_srand()) . '.png';
+    $imageUrl= "http://".$_SERVER['HTTP_HOST']."/" . $folder .$filename;
+    imagepng($im, $folder . $filename);
 
     $lastinsertId = mysqli_insert_id($link);
 
@@ -121,3 +127,4 @@ mysqli_close($link);
 header("Content-type: application/json; charset=utf-8");
 echo json_encode(array("vong" =>  "Sorry, da ist mir ein Fehler unterlaufen! Bitte probiere es erneut!"));
 exit();
+

@@ -14,8 +14,7 @@ $start = $limit * $page;
 
 if (!$start && !is_int($start)) $start = 0;
 
-//$link = mysqli_connect("127.0.0.1", "root", "", "vong");
-$link = mysqli_connect("127.0.0.1", "vongdb", "&D2o5xd8", "vong");
+$link = mysqli_connect("127.0.0.1", "root", "", "vong");
 
 /* check connection */
 if (mysqli_connect_errno()) {
@@ -91,22 +90,11 @@ $previousLikes = (isset($_SESSION["likes"]))? $_SESSION["likes"]: array();
     <link rel="stylesheet" href="css/shariff.min.css">
     <!-- Your custom styles (optional) -->
     <link href="css/style.css" rel="stylesheet">
-    <!-- Google Tag Manager -->
-    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-            new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-            j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-            'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-        })(window,document,'script','dataLayer','GTM-W8XX6HP');</script>
-    <!-- End Google Tag Manager -->
 
-    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
 </head>
 
 <body>
-<!-- Google Tag Manager (noscript) -->
-<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-W8XX6HP"
-                  height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
-<!-- End Google Tag Manager (noscript) -->
+
 <nav class="navbar navbar-default  main-nav navbar-light bg-faded">
     <div class="container">
         <!-- Brand and toggle get grouped for better mobile display -->
