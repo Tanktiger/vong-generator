@@ -4,6 +4,7 @@ include_once "gd-text/src/TextWrapping.php";
 include_once "gd-text/src/Color.php";
 include_once "gd-text/src/HorizontalAlignment.php";
 include_once "gd-text/src/VerticalAlignment.php";
+include_once "config.php";
 include_once "vongClass.php";
 use GDText\Box;
 use GDText\Color;
@@ -16,7 +17,7 @@ if (!isset($_SERVER['HTTP_HOST']) || !in_array($_SERVER['HTTP_HOST'], $allowed_h
     exit;
 }
 
-$link = mysqli_connect("127.0.0.1", "root", "", "vong");
+$link = mysqli_connect(Config::DB_DOMAIN, Config::DB_USER, Config::DB_PASSWORD, Config::DB_DATABASE);
 
 /* check connection */
 if (mysqli_connect_errno()) {
@@ -49,49 +50,53 @@ if (isset($_POST["text"]) && $_POST["text"] !== '') {
         mysqli_free_result($result);
     }
 
-    $im = imagecreatefromjpeg("img/vong.jpg");
+    $imageUrl = null;
 
-    $fs = 80;
+    if (strlen($vong) < 800) {
+        $im = imagecreatefromjpeg("img/vong.jpg");
 
-    //Damit die schrift auch ins Bild passt, hier die schriftgröße je nach Zeichen reduzieren
-    if (strlen($vong) > 100 && strlen($vong) < 200) {
-        $fs = 60;
-    } else if (strlen($vong) >= 200 && strlen($vong) < 300) {
-        $fs = 40;
-    } else if (strlen($vong) >= 300 && strlen($vong) < 500) {
-        $fs = 20;
-    }else if (strlen($vong) >= 500) {
-        $fs = 10;
-    }
+        $fs = 80;
 
-    $box = new Box($im);
-    $box->setFontFace(__DIR__.'/font/Vinegar-Regular.otf'); //@TODO: auf font von vong anpassen
-    $box->setFontSize($fs);
-    $box->setFontColor(new Color(0, 0, 0));
-    $box->setTextShadow(new Color(0, 0, 0, 50), 0, 0);
-    $box->setLineHeight(1.2);
-    $box->setBox(20, 0, 900, 900);
-    $box->setTextAlign('center', 'center');
-    $box->draw(html_entity_decode($vong));
+        //Damit die schrift auch ins Bild passt, hier die schriftgröße je nach Zeichen reduzieren
+        if (strlen($vong) > 100 && strlen($vong) < 200) {
+            $fs = 60;
+        } else if (strlen($vong) >= 200 && strlen($vong) < 300) {
+            $fs = 40;
+        } else if (strlen($vong) >= 300 && strlen($vong) < 500) {
+            $fs = 20;
+        } else if (strlen($vong) >= 500) {
+            $fs = 10;
+        }
+
+        $box = new Box($im);
+        $box->setFontFace(__DIR__.'/font/Vinegar-Regular.otf'); //@TODO: auf font von vong anpassen
+        $box->setFontSize($fs);
+        $box->setFontColor(new Color(0, 0, 0));
+        $box->setTextShadow(new Color(0, 0, 0, 50), 0, 0);
+        $box->setLineHeight(1.2);
+        $box->setBox(20, 0, 900, 900);
+        $box->setTextAlign('center', 'center');
+        $box->draw(html_entity_decode($vong));
 
 
 //        header("Content-type: image/png");
-    $folder = "img/created/" . date("Y") . "/" . date("m") . "/" . date("d") . "/";
+        $folder = "img/created/" . date("Y") . "/" . date("m") . "/" . date("d") . "/";
 
-    if (!is_dir($folder)) {
-        mkdir($folder, 0755, true);
+        if (!is_dir($folder)) {
+            mkdir($folder, 0755, true);
+        }
+
+        $filename = md5(time() . mt_srand()) . '.png';
+        $imageUrl= "http://".$_SERVER['HTTP_HOST']."/" . $folder .$filename;
+        imagepng($im, $folder . $filename);
+
+        $lastinsertId = mysqli_insert_id($link);
+
+        //save image
+        $result = mysqli_query($link, "UPDATE user_text SET image='".$imageUrl."' WHERE id=" . $lastinsertId);
+
+        mysqli_close($link);
     }
-
-    $filename = md5(time() . mt_srand()) . '.png';
-    $imageUrl= "http://".$_SERVER['HTTP_HOST']."/" . $folder .$filename;
-    imagepng($im, $folder . $filename);
-
-    $lastinsertId = mysqli_insert_id($link);
-
-    //save image
-    $result = mysqli_query($link, "UPDATE user_text SET image='".$imageUrl."' WHERE id=" . $lastinsertId);
-
-    mysqli_close($link);
 
     header("Content-type: application/json; charset=utf-8");
 

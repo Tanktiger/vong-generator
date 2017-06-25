@@ -1,0 +1,10 @@
+2017-06-25T18:11:30+00:00	ERROR	5	in C:\projects\vong\api\helper.php line 39
+2017-06-25T18:11:30+00:00	DEBUG	could not generate the json	in C:\projects\vong\api\helper.php line 41
+2017-06-25T18:12:17+00:00	ERROR	Malformed UTF-8 characters, possibly incorrectly encoded	in C:\projects\vong\api\helper.php line 41
+2017-06-25T18:12:17+00:00	DEBUG	could not generate the json	in C:\projects\vong\api\helper.php line 43
+2017-06-25T18:18:08+00:00	DEBUG	Not text provided	in C:\projects\vong\api\helper.php line 43
+2017-06-25T18:18:08+00:00	DEBUG	Not text provided	in C:\projects\vong\api\helper.php line 43
+2017-06-25T18:19:37+00:00	DEBUG	Not text provided	in C:\projects\vong\api\helper.php line 46
+2017-06-25T18:21:09+00:00	DEBUG	Not text provided	in C:\projects\vong\api\helper.php line 47
+2017-06-25T18:21:27+00:00	DEBUG	Not text provided	in C:\projects\vong\api\helper.php line 47
+2017-06-25T18:43:05+00:00	DEBUG	Not text provided	in C:\projects\vong\api\helper.php line 47
