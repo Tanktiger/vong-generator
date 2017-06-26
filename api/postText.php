@@ -29,6 +29,8 @@ if (mysqli_connect_errno()) {
 
 if (isset($_POST["text"]) && $_POST["text"] !== '') {
     $text =  strip_tags($_POST['text']);
+    $canGeneratePictures = (isset($_POST["picture"]) && ($_POST["picture"] === true || $_POST["picture"] === "true"));
+    $userInfo = null;
 
     $vongClass = new Vong();
     $vong = $vongClass->vongarize($text);
@@ -53,7 +55,7 @@ if (isset($_POST["text"]) && $_POST["text"] !== '') {
 
     $imageUrl = null;
 
-    if (strlen($vong) < 800) {
+    if (strlen($vong) < 800 && $canGeneratePictures) {
         $im = imagecreatefromjpeg("../img/vong.jpg");
 
         $fs = 80;
@@ -97,9 +99,11 @@ if (isset($_POST["text"]) && $_POST["text"] !== '') {
         $result = mysqli_query($link, "UPDATE user_text SET image='".$imageUrl."' WHERE id=" . $lastinsertId);
 
         mysqli_close($link);
+    } else if ($canGeneratePictures && strlen($vong) >= 800) {
+        $userInfo = "Dein Text ist zu lang für ein Bild!";
     }
 
-    $helper->response(array("vong" => $vong, "url" => $imageUrl));
+    $helper->response(array("vong" => $vong, "url" => $imageUrl, "user_info" => $userInfo));
 
 } else {
     $helper->responseError("Not text provided");
