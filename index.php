@@ -1,4 +1,5 @@
 <?php
+include_once "config.php";
 session_start();
 /**
  * @copyright  Tom Scheduikat, 2017
@@ -14,8 +15,8 @@ $start = $limit * $page;
 
 if (!$start && !is_int($start)) $start = 0;
 
-$link = mysqli_connect("127.0.0.1", "root", "", "vong");
-
+$link = mysqli_connect(Config::DB_DOMAIN, Config::DB_USER, Config::DB_PASSWORD, Config::DB_DATABASE);
+mysqli_set_charset($link, "utf8");
 /* check connection */
 if (mysqli_connect_errno()) {
 //    printf("Connect failed: %s\n", mysqli_connect_error());

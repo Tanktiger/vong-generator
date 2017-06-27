@@ -18,7 +18,7 @@ if (!isset($_SERVER['HTTP_HOST']) || !in_array($_SERVER['HTTP_HOST'], $allowed_h
 }
 
 $link = mysqli_connect(Config::DB_DOMAIN, Config::DB_USER, Config::DB_PASSWORD, Config::DB_DATABASE);
-
+mysqli_set_charset($link, "utf8");
 /* check connection */
 if (mysqli_connect_errno()) {
     echo json_encode(array("vong" => "Sorry, da ist mir ein Fehler unterlaufen! Bitte probiere es erneut!"));

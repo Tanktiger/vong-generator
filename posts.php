@@ -1,8 +1,9 @@
 <?php
+include_once "config.php";
 session_start();
 
-//$link = mysqli_connect("127.0.0.1", "root", "", "vong");
-$link = mysqli_connect("127.0.0.1", "vongdb", "&D2o5xd8", "vong");
+$link = mysqli_connect(Config::DB_DOMAIN, Config::DB_USER, Config::DB_PASSWORD, Config::DB_DATABASE);
+mysqli_set_charset($link, "utf8");
 
 /* check connection */
 if (mysqli_connect_errno()) {
